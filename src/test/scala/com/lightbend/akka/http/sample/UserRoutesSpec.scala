@@ -1,16 +1,16 @@
 package com.lightbend.akka.http.sample
 
-import akka.actor.ActorRef
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
+import com.lightbend.akka.http.sample.domain.User
+import com.lightbend.akka.http.sample.repository.UserRepository
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, WordSpec}
 
 class UserRoutesSpec extends WordSpec with Matchers with ScalaFutures with ScalatestRouteTest
     with UserRoutes {
-  override val userRegistryActor: ActorRef = system.actorOf(UserRegistryActor.props, "userRegistry")
-
+  override def userRepository: UserRepository = UserRepository
   private lazy val routes = userRoutes
 
   "UserRoutes" should {
@@ -44,4 +44,6 @@ class UserRoutesSpec extends WordSpec with Matchers with ScalaFutures with Scala
       }
     }
   }
+
+
 }

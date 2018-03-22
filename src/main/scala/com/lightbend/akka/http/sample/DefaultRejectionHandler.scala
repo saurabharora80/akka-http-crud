@@ -7,12 +7,13 @@ import akka.http.scaladsl.server.{ MalformedRequestContentRejection, RejectionHa
 
 trait DefaultRejectionHandler {
   implicit def rejectionHandler: RejectionHandler = {
-    def offendingArg(msg: String) = "'(\\w+)'".r.findFirstIn(msg).map(_.replaceAll("'", "")).getOrElse("")
+    def pathAndReason(msg: String) = msg.replace("requirement failed:", "").trim.split("::")
+
     RejectionHandler.newBuilder()
       .handle {
-        case MalformedRequestContentRejection(msg, _) => complete(HttpResponse(
+        case ValidationRejection(msg, _) => complete(HttpResponse(
           StatusCodes.BadRequest,
-          entity = HttpEntity(ContentTypes.`application/json`, s"""{"code":"invalid.request", "path": "${offendingArg(msg)}", "reason": "$msg"}""")
+          entity = HttpEntity(ContentTypes.`application/json`, s"""{"code":"invalid.request", "path": "${pathAndReason(msg)(0)}", "reason": "${pathAndReason(msg)(1)}"}""")
         ))
       }.result()
   }
