@@ -1,13 +1,13 @@
 package com.lightbend.akka.http.sample.repository
 
-import com.lightbend.akka.http.sample.domain.{Seva, User, Users}
+import com.lightbend.akka.http.sample.domain.{ Seva, User, Users }
 import org.mongodb.scala.bson.collection.immutable.Document
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.concurrent.{ IntegrationPatience, ScalaFutures }
+import org.scalatest.{ BeforeAndAfterEach, Matchers, WordSpec }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{ Await, Future }
 
 class UserRepositorySpec extends WordSpec with Matchers with ScalaFutures with IntegrationPatience with BeforeAndAfterEach {
 
@@ -99,7 +99,7 @@ class UserRepositorySpec extends WordSpec with Matchers with ScalaFutures with I
 
       whenReady(eventualMaybeUser) {
         case (true, Some(actualUser)) => actualUser.sevas should contain theSameElementsAs Seq(Seva("2010-10-02", "housekeeping"))
-        case (false, _) => fail("couldn't remove seva")
+        case _ => fail("couldn't remove seva")
       }
     }
 

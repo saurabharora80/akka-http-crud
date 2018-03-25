@@ -1,11 +1,11 @@
 package com.lightbend.akka.http.sample.repository
 
-import com.lightbend.akka.http.sample.domain.{Seva, User, Users}
+import com.lightbend.akka.http.sample.domain.{ Seva, User, Users }
 import org.bson.codecs.configuration.CodecRegistries._
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.bson.collection.immutable.Document
-import org.mongodb.scala.{Completed, MongoClient, MongoCollection, MongoDatabase, _}
+import org.mongodb.scala.{ Completed, MongoClient, MongoCollection, MongoDatabase, _ }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

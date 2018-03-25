@@ -1,20 +1,19 @@
 package com.lightbend.akka.http.sample
 
-import akka.http.scaladsl.model.{ ContentTypes, HttpEntity, HttpResponse, StatusCodes }
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.complete
-import akka.http.scaladsl.server.directives.RouteDirectives._
-import akka.http.scaladsl.server.{ MalformedRequestContentRejection, RejectionHandler, ValidationRejection }
+import akka.http.scaladsl.server.{MalformedRequestContentRejection, RejectionHandler}
+import spray.json.DefaultJsonProtocol._
 
-trait DefaultRejectionHandler {
-  implicit def rejectionHandler: RejectionHandler = {
-    def pathAndReason(msg: String) = msg.replace("requirement failed:", "").trim.split("::")
+trait DefaultRejectionHandler extends SprayJsonSupport {
 
+  implicit val validationErrorFormat = jsonFormat3(ValidationError)
+
+  implicit def rejectionHandler: RejectionHandler =
     RejectionHandler.newBuilder()
       .handle {
-        case ValidationRejection(msg, _) => complete(HttpResponse(
-          StatusCodes.BadRequest,
-          entity = HttpEntity(ContentTypes.`application/json`, s"""{"code":"invalid.request", "path": "${pathAndReason(msg)(0)}", "reason": "${pathAndReason(msg)(1)}"}""")
-        ))
-      }.result()
-  }
+        case MalformedRequestContentRejection(_, ex: JsonValidationException) => complete(StatusCodes.BadRequest, ex.errors)
+      }
+      .result()
 }

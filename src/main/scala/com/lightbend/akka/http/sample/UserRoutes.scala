@@ -6,7 +6,7 @@ import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.util.Timeout
-import com.lightbend.akka.http.sample.domain.{Seva, User}
+import com.lightbend.akka.http.sample.domain.{ Seva, User }
 import com.lightbend.akka.http.sample.repository.UserRepository
 import spray.json.DefaultJsonProtocol
 
@@ -63,7 +63,7 @@ trait UserRoutes extends RequestJsonFormats with DefaultRejectionHandler {
             } ~
             (post & entity(as[Seva])) { seva =>
               onSuccess(userRepository.addSeva(userId, seva)) { maybeUser =>
-                if(maybeUser) complete(StatusCodes.Created, immutable.Seq(Location(Uri(s"/users/$userId/sevas/${seva.date}"))))
+                if (maybeUser) complete(StatusCodes.Created, immutable.Seq(Location(Uri(s"/users/$userId/sevas/${seva.date}"))))
                 else complete(StatusCodes.NotFound)
               }
             }
@@ -77,12 +77,12 @@ trait UserRoutes extends RequestJsonFormats with DefaultRejectionHandler {
             } ~
             (put & entity(as[Seva])) { seva =>
               onSuccess(userRepository.addSeva(userId, seva)) { updated =>
-                if(updated) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
+                if (updated) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
               }
             } ~
             delete {
               onSuccess(userRepository.deleteSeva(userId, "")) { updated =>
-                if(updated) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
+                if (updated) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
               }
             }
           }
