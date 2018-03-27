@@ -5,24 +5,28 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.lightbend.akka.http.sample.domain.User
 import com.lightbend.akka.http.sample.repository.UserRepository
-import org.mongodb.scala.bson.collection.immutable.Document
+import org.mongodb.scala.MongoDatabase
+import org.mongodb.scala.bson.collection.mutable.Document
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.{ BeforeAndAfterEach, Matchers }
 import spray.json.DefaultJsonProtocol._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class UserRoutesSpec extends WordSpec with Matchers with ScalaFutures with ScalatestRouteTest
+class UserRoutesSpec extends MongoDBSpec with Matchers with ScalaFutures with ScalatestRouteTest
     with UserRoutes with BeforeAndAfterEach {
-  override def userRepository: UserRepository = UserRepository
+
+  lazy val userRepository: UserRepository = new UserRepository {
+    override def database: MongoDatabase = testMongoDB
+  }
 
   private lazy val routes = userRoutes
 
   implicit val errorFormat = jsonFormat3(ValidationError)
 
   override def beforeEach(): Unit = {
-    Await.result(userRepository.usersCollection.deleteMany(Document()).toFuture(), 10.seconds)
+    Await.result(userRepository.collection.deleteMany(Document()).toFuture(), 10.seconds)
   }
 
   val httpEntity: (String) => HttpEntity.Strict = (str: String) => HttpEntity(ContentTypes.`application/json`, str)

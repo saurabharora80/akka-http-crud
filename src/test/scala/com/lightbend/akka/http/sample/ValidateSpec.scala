@@ -15,7 +15,7 @@ class ValidateSpec extends WordSpec with Matchers {
       )("")) match {
         case Failure(ex: JsonValidationException) =>
           ex.errors should contain allElementsOf Seq(InvalidValueError("field1", "message-for-field1"), InvalidValueError("field3", "message-for-field3"))
-        case Success(_) => fail("validations should have failed")
+        case _ => fail("validations should have failed")
       }
     }
   }

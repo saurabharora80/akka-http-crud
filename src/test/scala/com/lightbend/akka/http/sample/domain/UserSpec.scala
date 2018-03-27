@@ -13,7 +13,7 @@ class UserSpec extends WordSpec with Matchers {
         case Failure(ex: JsonValidationException) => ex.errors should contain allElementsOf Seq(
           ValidationError("invalid.value", "name", "name must be provided")
         )
-        case Success(_) => fail("should fail with Validation exception")
+        case _ => fail("should fail with Validation exception")
       }
     }
 
@@ -22,7 +22,7 @@ class UserSpec extends WordSpec with Matchers {
         case Failure(ex: JsonValidationException) => ex.errors should contain allElementsOf Seq(
           ValidationError("invalid.value", "age", "age must be greater than equal to 18")
         )
-        case Success(_) => fail("should fail with Validation exception")
+        case _ => fail("should fail with Validation exception")
       }
     }
 
@@ -31,7 +31,7 @@ class UserSpec extends WordSpec with Matchers {
         case Failure(ex: JsonValidationException) => ex.errors should contain allElementsOf Seq(
           ValidationError("invalid.value", "countryOfResidence", "countryOfResidence must be either UK or US")
         )
-        case Success(_) => fail("should fail with Validation exception")
+        case _ => fail("should fail with Validation exception")
       }
     }
 
@@ -42,7 +42,7 @@ class UserSpec extends WordSpec with Matchers {
           ValidationError("invalid.value", "age", "age must be greater than equal to 18"),
           ValidationError("invalid.value", "countryOfResidence", "countryOfResidence must be either UK or US")
         )
-        case Success(_) => fail("should fail with Validation exception")
+        case _ => fail("should fail with Validation exception")
       }
     }
   }

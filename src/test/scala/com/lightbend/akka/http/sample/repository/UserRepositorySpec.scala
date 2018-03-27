@@ -1,20 +1,24 @@
 package com.lightbend.akka.http.sample.repository
 
+import com.lightbend.akka.http.sample.MongoDBSpec
 import com.lightbend.akka.http.sample.domain.{ Seva, User, Users }
+import org.mongodb.scala.MongoDatabase
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.scalatest.concurrent.{ IntegrationPatience, ScalaFutures }
-import org.scalatest.{ BeforeAndAfterEach, Matchers, WordSpec }
+import org.scalatest.{ BeforeAndAfterEach, Matchers }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{ Await, Future }
 
-class UserRepositorySpec extends WordSpec with Matchers with ScalaFutures with IntegrationPatience with BeforeAndAfterEach {
+class UserRepositorySpec extends MongoDBSpec with Matchers with ScalaFutures with IntegrationPatience with BeforeAndAfterEach {
 
-  val userRepository: UserRepository = UserRepository
+  lazy val userRepository: UserRepository = new UserRepository {
+    override def database: MongoDatabase = testMongoDB
+  }
 
   override def beforeEach(): Unit = {
-    Await.result(userRepository.usersCollection.deleteMany(Document()).toFuture(), 10.seconds)
+    Await.result(userRepository.collection.deleteMany(Document()).toFuture(), 10.seconds)
   }
 
   "repository" should {
