@@ -3,7 +3,7 @@ package com.lightbend.akka.http.sample
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.complete
-import akka.http.scaladsl.server.{MalformedRequestContentRejection, RejectionHandler}
+import akka.http.scaladsl.server.{ MalformedRequestContentRejection, RejectionHandler }
 import spray.json.DefaultJsonProtocol._
 
 trait DefaultRejectionHandler extends SprayJsonSupport {

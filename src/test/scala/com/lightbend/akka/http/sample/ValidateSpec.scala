@@ -1,8 +1,8 @@
 package com.lightbend.akka.http.sample
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{ Matchers, WordSpec }
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 class ValidateSpec extends WordSpec with Matchers {
 

@@ -13,7 +13,7 @@ import spray.json.DefaultJsonProtocol
 import scala.collection.immutable
 import scala.concurrent.duration._
 
-trait UserRoutes extends RequestJsonFormats with DefaultRejectionHandler {
+trait UserRoutes extends RequestJsonFormats with DefaultRejectionHandler with DefaultExceptionHandler {
 
   implicit def system: ActorSystem
 
@@ -30,64 +30,64 @@ trait UserRoutes extends RequestJsonFormats with DefaultRejectionHandler {
         get {
           onSuccess(userRepository.getUsers) { complete(_) }
         } ~
-        (post & entity(as[User])) { user =>
-          onSuccess(userRepository.insert(user)) { _ =>
-            complete(HttpResponse(StatusCodes.Created, immutable.Seq(Location(Uri(s"/users/${user._id}")))))
+          (post & entity(as[User])) { user =>
+            onSuccess(userRepository.insert(user)) { _ =>
+              complete(HttpResponse(StatusCodes.Created, immutable.Seq(Location(Uri(s"/users/${user._id}")))))
+            }
           }
-        }
       } ~
-      pathPrefix(Segment) { userId =>
-        pathEnd {
-          get {
-            onSuccess(userRepository.getUser(userId)) { mayBeUser =>
-              mayBeUser.map(complete(_)).getOrElse(complete(StatusCodes.NotFound))
-            }
-          } ~
-          delete {
-            onSuccess(userRepository.delete(userId)) { deleted =>
-              if (deleted) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
-            }
-          } ~
-          (put & entity(as[User])) { user =>
-            onSuccess(userRepository.update(userId, user)) { updated =>
-              if (updated) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
-            }
-          }
-        } ~
-        pathPrefix("sevas") {
+        pathPrefix(Segment) { userId =>
           pathEnd {
             get {
-              onSuccess(userRepository.getUser(userId)) { maybeUser =>
-                maybeUser.map(u => complete(u.sevas)).getOrElse(complete(StatusCodes.NotFound))
+              onSuccess(userRepository.getUser(userId)) { mayBeUser =>
+                mayBeUser.map(complete(_)).getOrElse(complete(StatusCodes.NotFound))
               }
             } ~
-            (post & entity(as[Seva])) { seva =>
-              onSuccess(userRepository.addSeva(userId, seva)) { maybeUser =>
-                if (maybeUser) complete(StatusCodes.Created, immutable.Seq(Location(Uri(s"/users/$userId/sevas/${seva.date}"))))
-                else complete(StatusCodes.NotFound)
+              delete {
+                onSuccess(userRepository.delete(userId)) { deleted =>
+                  if (deleted) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
+                }
+              } ~
+              (put & entity(as[User])) { user =>
+                onSuccess(userRepository.update(userId, user)) { updated =>
+                  if (updated) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
+                }
               }
-            }
           } ~
-          pathPrefix(Segment) { date =>
-            get {
-              onSuccess(userRepository.getUser(userId)) {
-                case Some(user) => user.sevaForDay(date).map(complete(_)).getOrElse(complete(StatusCodes.NotFound))
-                case None => complete(StatusCodes.NotFound)
-              }
-            } ~
-            (put & entity(as[Seva])) { seva =>
-              onSuccess(userRepository.addSeva(userId, seva)) { updated =>
-                if (updated) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
-              }
-            } ~
-            delete {
-              onSuccess(userRepository.deleteSeva(userId, "")) { updated =>
-                if (updated) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
-              }
+            pathPrefix("sevas") {
+              pathEnd {
+                get {
+                  onSuccess(userRepository.getUser(userId)) { maybeUser =>
+                    maybeUser.map(u => complete(u.sevas)).getOrElse(complete(StatusCodes.NotFound))
+                  }
+                } ~
+                  (post & entity(as[Seva])) { seva =>
+                    onSuccess(userRepository.addSeva(userId, seva)) { maybeUser =>
+                      if (maybeUser) complete(StatusCodes.Created, immutable.Seq(Location(Uri(s"/users/$userId/sevas/${seva.date}"))))
+                      else complete(StatusCodes.NotFound)
+                    }
+                  }
+              } ~
+                pathPrefix(Segment) { date =>
+                  get {
+                    onSuccess(userRepository.getUser(userId)) {
+                      case Some(user) => user.sevaForDay(date).map(complete(_)).getOrElse(complete(StatusCodes.NotFound))
+                      case None => complete(StatusCodes.NotFound)
+                    }
+                  } ~
+                    (put & entity(as[Seva])) { seva =>
+                      onSuccess(userRepository.addSeva(userId, seva)) { updated =>
+                        if (updated) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
+                      }
+                    } ~
+                    delete {
+                      onSuccess(userRepository.deleteSeva(userId, "")) { updated =>
+                        if (updated) complete(StatusCodes.NoContent) else complete(StatusCodes.NotFound)
+                      }
+                    }
+                }
             }
-          }
         }
-      }
     }
   }
   //@formatter:on

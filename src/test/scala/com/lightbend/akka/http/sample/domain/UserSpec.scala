@@ -1,9 +1,9 @@
 package com.lightbend.akka.http.sample.domain
 
-import com.lightbend.akka.http.sample.{JsonValidationException, ValidationError}
-import org.scalatest.{Matchers, WordSpec}
+import com.lightbend.akka.http.sample.{ JsonValidationException, ValidationError }
+import org.scalatest.{ Matchers, WordSpec }
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 class UserSpec extends WordSpec with Matchers {
 
